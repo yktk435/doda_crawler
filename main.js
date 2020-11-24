@@ -2,60 +2,13 @@
 // 関数
 /************************************************************/
 function firstWrite() {
-    let text = '';
-
-    text = "会社名	" +
-        "仕事内容	" +
-        "対象となる方	" +
-        "選考のポイント	" +
-        "勤務地	" +
-        "勤務時間	" +
-        "雇用形態	" +
-        "給与	" +
-        "待遇・福利厚生	" +
-        "休日・休暇	" +
-        "事業概要	" +
-        "住所	" +
-        "設立	" +
-        "代表者	" +
-        "従業員数	" +
-        "資本	" +
-        "上場市場名	" +
-        "平均年齢	" +
-        "企業URL	" +
-        "求人URL	" +
-        "Job	"
-
+    let text = "会社名	" + "仕事内容	" + "対象となる方	" + "選考のポイント	" + "勤務地	" + "勤務時間	" + "雇用形態	" + "給与	" + "待遇・福利厚生	" + "休日・休暇	" + "事業概要	" + "住所	" + "設立	" + "代表者	" + "従業員数	" + "資本	" + "上場市場名	" + "平均年齢	" + "企業URL	" + "求人URL	" + "Job	"
     let write = Application.currentApplication(); // 現在実行しているアプリケーションを取得
     write.includeStandardAdditions = true;
     write.doShellScript("echo '" + text + "'>>text.text");
 }
 function writeFile(obj) {
-    let text = '';
-
-    text = obj.name + "	" +
-        obj.jobDescription + "	" +
-        obj.targetPerson + "	" +
-        obj.selectionPoints + "	" +
-        obj.workLocation + "	" +
-        obj.workingHours + "	" +
-        obj.employmentStatus + "	" +
-        obj.salary + "	" +
-        obj.welfare + "	" +
-        obj.holiday + "	" +
-        obj.businessSummary + "	" +
-        obj.address + "	" +
-        obj.established + "	" +
-        obj.represenTative + "	" +
-        obj.numberOfEmployees + "	" +
-        obj.capital + "	" +
-        obj.listedMarketName + "	" +
-        obj.aveAge + "	" +
-        obj.companyUrl + "	" +
-        obj.url + "	"+
-        obj.job + "	"
-
-
+    let text = obj.name + "	" + obj.jobDescription + "	" + obj.targetPerson + "	" + obj.selectionPoints + "	" + obj.workLocation + "	" + obj.workingHours + "	" + obj.employmentStatus + "	" + obj.salary + "	" + obj.welfare + "	" + obj.holiday + "	" + obj.businessSummary + "	" + obj.address + "	" + obj.established + "	" + obj.represenTative + "	" + obj.numberOfEmployees + "	" + obj.capital + "	" + obj.listedMarketName + "	" + obj.aveAge + "	" + obj.companyUrl + "	" + obj.url + "	" + obj.job + "	"
     let write = Application.currentApplication(); // 現在実行しているアプリケーションを取得
     write.includeStandardAdditions = true;
     write.doShellScript("echo '" + text + "'>>text.text");
@@ -68,7 +21,7 @@ function getCompName() {
 
 function getJobDesc() {
     let res = '';
-    let a =document.querySelectorAll(".job.width688")[index].textContent
+    let a = document.querySelectorAll(".job.width688")[index].textContent
     return a;
 }
 
@@ -76,8 +29,7 @@ function duplicateCheck(search) {
     var app = Application.currentApplication(); // 現在実行しているアプリケーションを取得
     app.includeStandardAdditions = true;
     try {
-        let text = app.doShellScript("find text.text -type f | xargs grep '" + search+"'"); // lsコマンド
-        // app.displayDialog(text);
+        let text = app.doShellScript("find text.text -type f | xargs grep '" + search + "'"); // lsコマンド
         console.log('すでにある')
         return 1;
     } catch (error) {
@@ -96,106 +48,22 @@ function nextButton() {
         return 0;
     }
 }
-function getFields(input, field) {
-    let output = [];
-    for (let i = 0; i < input.length; ++i)
-        output.push(input[i][field]);
-
-    let write = Application.currentApplication(); // 現在実行しているアプリケーションを取得
-    write.includeStandardAdditions = true;
-    switch (field) {
-        case 'jobDescription':
-            field = '仕事内容'
-            break;
-        case 'targetPerson':
-            field = '対象となる方'
-            break;
-        case 'selectionPoints':
-            field = '選考のポイント'
-            break;
-        case 'workLocation':
-            field = '勤務地'
-            break;
-        case 'workingHours':
-            field = '勤務時間'
-            break;
-        case 'employmentStatus':
-            field = '雇用形態'
-            break;
-        case 'salary':
-            field = '給与'
-            break;
-        case 'welfare':
-            field = '待遇・福利厚生'
-            break;
-        case 'holiday':
-            field = '休日・休暇'
-            break;
-        case 'businessSummary':
-            field = '事業概要'
-            break;
-        case 'address':
-            field = '住所'
-            break;
-        case 'established':
-            field = '設立'
-            break;
-        case 'represenTative':
-            field = '代表者'
-            break;
-        case 'numberOfEmployees':
-            field = '従業員数'
-            break;
-        case 'capital':
-            field = '資本'
-            break;
-        case 'listedMarketName':
-            field = '上場市場名'
-            break
-        case 'aveAge':
-            field = '平均年齢'
-            break;
-        case 'companyUrl':
-            field = '企業URL'
-            break;
-        case 'url':
-            field = '求人URL'
-            break;
-        default:
-            break;
-    }
-
-    let text = write.doShellScript("echo '" + field + "	" + output.join('	') + "'>>text.text"); // lsコマンド
-    return output;
-}
 function exeJavascript(app, tab, code) {
     let res = app.execute(tab, code);
     waitLoading(windowChrome.activeTab)
     return res
 }
 
-function noti(info) {
-    let app = Application.currentApplication(); // 現在実行しているアプリケーションを取得
-    app.includeStandardAdditions = true;
-    app.displayDialog(info);
-    // app.displayNotification('はろーわーるど', {
-    //     withTitle: 'ほげほげ', 
-    //     subtitle: 'ふがふが', 
-    //     soundName: 'Glass'
-    // });
-}
 let getData = function () {
     let a = document.querySelectorAll("#job_description_table tr").length == 0
         ? Array.from(document.querySelectorAll(".tblDetail01.tblThDetail tr"))
         : Array.from(document.querySelectorAll("#job_description_table tr"))
-
 
     let tempInfo = {};
     let str = document.querySelector("#wrapper > div.head_detail > div > div > h1").innerText.replace(/\n.*/, "");
     str = str.replace(/\n/g, "");
     tempInfo.name = str;
     a.forEach(i => {
-        // alert(i.children[1].innerText.replace(/\n/g,""))
         switch (i.children[0].innerText) {
             case '仕事内容':
                 tempInfo.jobDescription = i.children[1].innerText.replace(/\n/g, "")
@@ -228,18 +96,14 @@ let getData = function () {
                 break;
         }
     })
-
     return tempInfo
 }
 const getCompanyProfile = function () {
     let a = document.querySelectorAll("#company_profile_table tr").length == 0
         ? Array.from(document.querySelectorAll(".modDetail04 dl"))
         : Array.from(document.querySelectorAll("#company_profile_table tr"))
-
-
     let tempInfo = {}
     a.forEach(i => {
-
         switch (i.children[0].innerText) {
             case '事業概要':
                 tempInfo.businessSummary = i.children[1].innerText.replace(/\n/g, "")
@@ -278,7 +142,6 @@ const getCompanyProfile = function () {
 const waitLoading = function (tab) {
     while (windowChrome.activeTab.loading()) {
         delay(0.5);
-
         if (!tab.loading()) {
             break;
         }
@@ -286,10 +149,8 @@ const waitLoading = function (tab) {
 }
 
 function funcToObj(func) {
-    let runFunctionStr = func.toString()
-    // console.log(runFunctionStr)
     return ({
-        javascript: "(" + runFunctionStr + ")();"
+        javascript: "(" + func.toString() + ")();"
     })
 }
 
@@ -300,21 +161,7 @@ function strToObj(str) {
 }
 
 
-// ブラウザ上で実行させる関数を定義
-let runFunction = function () {
-    let a = document.querySelector('img').src
-    alert('カンザス');
-    return a;
-};
-
-let loginCheck = function () {
-    // ログインしていれば
-    // PC_header_logout_cl
-    let res = document.querySelector("#PC_header_logout_cl")
-    return res ? 1 : 0
-}
 let gg = function () {
-    // document.querySelector('.company.width688').click()
     let a = document.querySelectorAll('.company.width688')
     a = Array.from(a)
     let arr = a.map((num, index) => index)
@@ -365,14 +212,14 @@ if (windowChrome !== null) {
             } else {
                 console.log('継続')
             }
-            tempInfo.job=jobDesc
-            
-            
+            tempInfo.job = jobDesc
+
+
             str = companyClick.toString().replace(/index/g, i)
             // i番目の会社をクリック
             let as = exeJavascript(app, windowChrome.tabs[0], strToObj(str));
             // str = getCompName.toString()
-           
+
 
             // 求人詳詳細をクリック
             let res = exeJavascript(app, windowChrome.activeTab, funcToObj(kyujinClick));
@@ -384,43 +231,13 @@ if (windowChrome !== null) {
                 ? exeJavascript(app, windowChrome.activeTab, funcToObj(getCompanyProfile))
                 : {}
 
-            Object.assign(
-                tempInfo,
-                data,
-                compData
-            )
+            Object.assign(tempInfo,data,compData)
             tempInfo.url = windowChrome.activeTab.url()
             writeFile(tempInfo)
             windowChrome.activeTab.close()
             // info.push(tempInfo)
         }
-        /*****************************/
-        // infoの整形
-
-
-
-        // let companyName = getFields(info, 'name')
-        // let jobDescription = getFields(info, 'jobDescription')
-        // let targetPerson = getFields(info, 'targetPerson')
-        // let selectionPoints = getFields(info, 'selectionPoints')
-        // let workLocation = getFields(info, 'workLocation')
-        // let workingHours = getFields(info, 'workingHours')
-        // let employmentStatus = getFields(info, 'employmentStatus')
-        // let salary = getFields(info, 'salary')
-        // let welfare = getFields(info, 'welfare')
-        // let holiday = getFields(info, 'holiday')
-        // let businessSummary = getFields(info, 'businessSummary')
-        // let address = getFields(info, 'address')
-        // let established = getFields(info, 'established')
-        // let represenTative = getFields(info, 'represenTative')
-        // let numberOfEmployees = getFields(info, 'numberOfEmployees')
-        // let capital = getFields(info, 'capital')
-        // let aveAge = getFields(info, 'aveAge')
-        // let companyUrl = getFields(info, 'companyUrl')
-        // let kyujinUrl = getFields(info, 'url')
-        // ファイルへ書き込み
-
-
+        
     } while (exeJavascript(app, windowChrome.tabs[0], funcToObj(nextButton)))
 
 } else {
