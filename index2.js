@@ -1,21 +1,87 @@
 /************************************************************/
 // 関数
 /************************************************************/
+function firstWrite() {
+    let text = '';
+
+    text = "会社名	" +
+        "仕事内容	" +
+        "対象となる方	" +
+        "選考のポイント	" +
+        "勤務地	" +
+        "勤務時間	" +
+        "雇用形態	" +
+        "給与	" +
+        "待遇・福利厚生	" +
+        "休日・休暇	" +
+        "事業概要	" +
+        "住所	" +
+        "設立	" +
+        "代表者	" +
+        "従業員数	" +
+        "資本	" +
+        "上場市場名	" +
+        "平均年齢	" +
+        "企業URL	" +
+        "求人URL	" +
+        "Job	"
+
+    let write = Application.currentApplication(); // 現在実行しているアプリケーションを取得
+    write.includeStandardAdditions = true;
+    write.doShellScript("echo '" + text + "'>>text.text");
+}
+function writeFile(obj) {
+    let text = '';
+
+    text = obj.name + "	" +
+        obj.jobDescription + "	" +
+        obj.targetPerson + "	" +
+        obj.selectionPoints + "	" +
+        obj.workLocation + "	" +
+        obj.workingHours + "	" +
+        obj.employmentStatus + "	" +
+        obj.salary + "	" +
+        obj.welfare + "	" +
+        obj.holiday + "	" +
+        obj.businessSummary + "	" +
+        obj.address + "	" +
+        obj.established + "	" +
+        obj.represenTative + "	" +
+        obj.numberOfEmployees + "	" +
+        obj.capital + "	" +
+        obj.listedMarketName + "	" +
+        obj.aveAge + "	" +
+        obj.companyUrl + "	" +
+        obj.url + "	"+
+        obj.job + "	"
+
+
+    let write = Application.currentApplication(); // 現在実行しているアプリケーションを取得
+    write.includeStandardAdditions = true;
+    write.doShellScript("echo '" + text + "'>>text.text");
+}
 function getCompName() {
     let str = document.querySelector("#wrapper > div.head_detail > div > div > h1").innerText.replace(/\n.*/, "");
     str = str.replace(/\n/g, "");
     return str;
 }
-function compCheck(search) {
+
+function getJobDesc() {
+    let res = '';
+    let a =document.querySelectorAll(".job.width688")[index].textContent
+    return a;
+}
+
+function duplicateCheck(search) {
     var app = Application.currentApplication(); // 現在実行しているアプリケーションを取得
     app.includeStandardAdditions = true;
-
     try {
-        let text = app.doShellScript("find text.text -type f | xargs grep " + search); // lsコマンド
-        console.log(text);
+        let text = app.doShellScript("find text.text -type f | xargs grep '" + search+"'"); // lsコマンド
+        // app.displayDialog(text);
+        console.log('すでにある')
         return 1;
     } catch (error) {
-        console.log(search + 'はまた追加してない')
+        console.log('まだ追加してない')
         return 0;
     }
 }
@@ -212,7 +278,7 @@ const getCompanyProfile = function () {
 const waitLoading = function (tab) {
     while (windowChrome.activeTab.loading()) {
         delay(0.5);
-        console.log('wait')
+
         if (!tab.loading()) {
             break;
         }
@@ -266,6 +332,7 @@ let companyClick = function () {
 // メイン
 /************************************************************/
 
+// firstWrite()
 
 let app = Application("Google Chrome");
 app.includeStandardAdditions = true;
@@ -286,57 +353,71 @@ if (windowChrome !== null) {
         let companies = app.execute(windowChrome.tabs[0], funcToObj(gg));
 
         let info = []
-        let r
         for (let i = 0; i < companies.length; i++) {
             let tempInfo = {}
-            let str = companyClick.toString().replace(/index/g, i)
+            console.log('')
+            console.log(i + "番目")
+            let str = getJobDesc.toString().replace(/index/g, i)
+            let jobDesc = exeJavascript(app, windowChrome.tabs[0], strToObj(str));
+            if (duplicateCheck(jobDesc)) {
+                console.log('スキップ')
+                continue
+            } else {
+                console.log('継続')
+            }
+            tempInfo.job=jobDesc
+            
+            
+            str = companyClick.toString().replace(/index/g, i)
             // i番目の会社をクリック
             let as = exeJavascript(app, windowChrome.tabs[0], strToObj(str));
-            str = getCompName.toString().replace(/index/g, i)
-            let comname = exeJavascript(app, windowChrome.activeTab, strToObj(str));
+            // str = getCompName.toString()
+           
 
             // 求人詳詳細をクリック
             let res = exeJavascript(app, windowChrome.activeTab, funcToObj(kyujinClick));
             let data = exeJavascript(app, windowChrome.activeTab, funcToObj(getData))
                 ? exeJavascript(app, windowChrome.activeTab, funcToObj(getData))
                 : {}
-            console.log("data", data.holiday)
+
             let compData = exeJavascript(app, windowChrome.activeTab, funcToObj(getCompanyProfile))
                 ? exeJavascript(app, windowChrome.activeTab, funcToObj(getCompanyProfile))
                 : {}
-            console.log("compData", compData.address)
+
             Object.assign(
                 tempInfo,
                 data,
                 compData
             )
             tempInfo.url = windowChrome.activeTab.url()
-
+            writeFile(tempInfo)
             windowChrome.activeTab.close()
-            info.push(tempInfo)
+            // info.push(tempInfo)
         }
         /*****************************/
         // infoの整形
 
-        let companyName = getFields(info, 'name')
-        let jobDescription = getFields(info, 'jobDescription')
-        let targetPerson = getFields(info, 'targetPerson')
-        let selectionPoints = getFields(info, 'selectionPoints')
-        let workLocation = getFields(info, 'workLocation')
-        let workingHours = getFields(info, 'workingHours')
-        let employmentStatus = getFields(info, 'employmentStatus')
-        let salary = getFields(info, 'salary')
-        let welfare = getFields(info, 'welfare')
-        let holiday = getFields(info, 'holiday')
-        let businessSummary = getFields(info, 'businessSummary')
-        let address = getFields(info, 'address')
-        let established = getFields(info, 'established')
-        let represenTative = getFields(info, 'represenTative')
-        let numberOfEmployees = getFields(info, 'numberOfEmployees')
-        let capital = getFields(info, 'capital')
-        let aveAge = getFields(info, 'aveAge')
-        let companyUrl = getFields(info, 'companyUrl')
-        let kyujinUrl = getFields(info, 'url')
+
+
+        // let companyName = getFields(info, 'name')
+        // let jobDescription = getFields(info, 'jobDescription')
+        // let targetPerson = getFields(info, 'targetPerson')
+        // let selectionPoints = getFields(info, 'selectionPoints')
+        // let workLocation = getFields(info, 'workLocation')
+        // let workingHours = getFields(info, 'workingHours')
+        // let employmentStatus = getFields(info, 'employmentStatus')
+        // let salary = getFields(info, 'salary')
+        // let welfare = getFields(info, 'welfare')
+        // let holiday = getFields(info, 'holiday')
+        // let businessSummary = getFields(info, 'businessSummary')
+        // let address = getFields(info, 'address')
+        // let established = getFields(info, 'established')
+        // let represenTative = getFields(info, 'represenTative')
+        // let numberOfEmployees = getFields(info, 'numberOfEmployees')
+        // let capital = getFields(info, 'capital')
+        // let aveAge = getFields(info, 'aveAge')
+        // let companyUrl = getFields(info, 'companyUrl')
+        // let kyujinUrl = getFields(info, 'url')
         // ファイルへ書き込み
 
 
