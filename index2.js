@@ -1,28 +1,6 @@
 /************************************************************/
 // 関数
 /************************************************************/
-function getWinTab(app) {
-
-    let windowChrome = null
-    let tab=null
-
-    for (let i = 0; i < app.windows.length; i++) {
-        for (let j = 0; j < app.windows[i].tabs.length; j++) {
-            if (app.windows[i].tabs[j].title().match(/(転職・求人情報- doda)/)) {
-                windowChrome = app.windows[i]
-                tab=app.windows[i].tabs[j]
-                break;
-            }
-        }
-    }
-    return windowChrome === null
-        ? 0
-        : ({
-            window: windowChrome,
-            tab:tab,
-        })
-        
-}
 function getCompName() {
     let str = document.querySelector("#wrapper > div.head_detail > div > div > h1").innerText.replace(/\n.*/, "");
     str = str.replace(/\n/g, "");
@@ -34,7 +12,7 @@ function compCheck(search) {
 
     try {
         let text = app.doShellScript("find text.text -type f | xargs grep " + search); // lsコマンド
-        console.log('追加済み')
+        console.log(text);
         return 1;
     } catch (error) {
         console.log(search + 'はまた追加してない')
@@ -126,7 +104,7 @@ function getFields(input, field) {
 }
 function exeJavascript(app, tab, code) {
     let res = app.execute(tab, code);
-    waitLoading(obj.window.activeTab)
+    waitLoading(windowChrome.activeTab)
     return res
 }
 
@@ -141,7 +119,11 @@ function noti(info) {
     // });
 }
 let getData = function () {
-    let a = Array.from(document.querySelectorAll("#job_description_table tr"));
+    let a = document.querySelectorAll("#job_description_table tr").length == 0
+        ? Array.from(document.querySelectorAll(".tblDetail01.tblThDetail tr"))
+        : Array.from(document.querySelectorAll("#job_description_table tr"))
+
+
     let tempInfo = {};
     let str = document.querySelector("#wrapper > div.head_detail > div > div > h1").innerText.replace(/\n.*/, "");
     str = str.replace(/\n/g, "");
@@ -184,7 +166,11 @@ let getData = function () {
     return tempInfo
 }
 const getCompanyProfile = function () {
-    let a = Array.from(document.querySelectorAll("#company_profile_table tr"))
+    let a = document.querySelectorAll("#company_profile_table tr").length == 0
+        ? Array.from(document.querySelectorAll(".modDetail04 dl"))
+        : Array.from(document.querySelectorAll("#company_profile_table tr"))
+
+
     let tempInfo = {}
     a.forEach(i => {
 
@@ -224,7 +210,7 @@ const getCompanyProfile = function () {
 
 }
 const waitLoading = function (tab) {
-    while (obj.window.activeTab.loading()) {
+    while (windowChrome.activeTab.loading()) {
         delay(0.5);
         console.log('wait')
         if (!tab.loading()) {
@@ -269,7 +255,8 @@ let gg = function () {
     return arr;
 }
 let kyujinClick = function () {
-    document.querySelector("#shStart > ul.switch_display.clrFix > li:nth-child(2) > a").click()
+    let detail = document.querySelector("#shStart > ul.switch_display.clrFix > li:nth-child(2) > a")
+    if (detail) detail.click()
 }
 let companyClick = function () {
     document.querySelectorAll('.company.width688')[index].click()
@@ -283,48 +270,49 @@ let companyClick = function () {
 let app = Application("Google Chrome");
 app.includeStandardAdditions = true;
 
-let obj = null
-obj=getWinTab(app)
-let tab = null;
+let windowChrome = null,
+    tab = null;
 
-if (obj.windowChrome !== null || obj!=0) {
+for (let i = 0; i < app.windows.length; i++) {
+    if (app.windows[i].name().match(/転職・求人情報- doda/)) {
+        windowChrome = app.windows[i]
+        break;
+    }
+}
+if (windowChrome !== null) {
 
     do {
         // 要素数取得(会社の数だけ)
-        let companies = app.execute(obj.tab, funcToObj(gg));
+        let companies = app.execute(windowChrome.tabs[0], funcToObj(gg));
 
         let info = []
         let r
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < companies.length; i++) {
             let tempInfo = {}
             let str = companyClick.toString().replace(/index/g, i)
             // i番目の会社をクリック
-            let as = exeJavascript(app, obj.tab, strToObj(str));
+            let as = exeJavascript(app, windowChrome.tabs[0], strToObj(str));
             str = getCompName.toString().replace(/index/g, i)
-            let comname = exeJavascript(app, obj.window.activeTab, strToObj(str));
+            let comname = exeJavascript(app, windowChrome.activeTab, strToObj(str));
 
-            if (compCheck(comname)) {
-                obj.window.activeTab.close()
-                continue
-            }
             // 求人詳詳細をクリック
-            let res = exeJavascript(app, obj.window.activeTab, funcToObj(kyujinClick));
-            let data = exeJavascript(app, obj.window.activeTab, funcToObj(getData))
-                ? exeJavascript(app, obj.window.activeTab, funcToObj(getData))
+            let res = exeJavascript(app, windowChrome.activeTab, funcToObj(kyujinClick));
+            let data = exeJavascript(app, windowChrome.activeTab, funcToObj(getData))
+                ? exeJavascript(app, windowChrome.activeTab, funcToObj(getData))
                 : {}
-
-            let compData = exeJavascript(app, obj.window.activeTab, funcToObj(getCompanyProfile))
-                ? exeJavascript(app, obj.window.activeTab, funcToObj(getCompanyProfile))
+            console.log("data", data.holiday)
+            let compData = exeJavascript(app, windowChrome.activeTab, funcToObj(getCompanyProfile))
+                ? exeJavascript(app, windowChrome.activeTab, funcToObj(getCompanyProfile))
                 : {}
-
+            console.log("compData", compData.address)
             Object.assign(
                 tempInfo,
                 data,
                 compData
             )
-            tempInfo.url = obj.window.activeTab.url()
+            tempInfo.url = windowChrome.activeTab.url()
 
-            obj.window.activeTab.close()
+            windowChrome.activeTab.close()
             info.push(tempInfo)
         }
         /*****************************/
@@ -350,7 +338,9 @@ if (obj.windowChrome !== null || obj!=0) {
         let companyUrl = getFields(info, 'companyUrl')
         let kyujinUrl = getFields(info, 'url')
         // ファイルへ書き込み
-    } while (!exeJavascript(app, obj.tab, funcToObj(nextButton)))
+
+
+    } while (exeJavascript(app, windowChrome.tabs[0], funcToObj(nextButton)))
 
 } else {
     console.log('画面が見当たらない')
