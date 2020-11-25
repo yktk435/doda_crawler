@@ -8,7 +8,7 @@ function firstWrite() {
     write.doShellScript("echo '" + text + "'>>text.text");
 }
 function writeFile(obj) {
-    let text = obj.name + "	" + obj.jobDescription + "	" + obj.targetPerson + "	" + obj.selectionPoints + "	" + obj.workLocation + "	" + obj.workingHours + "	" + obj.employmentStatus + "	" + obj.salary + "	" + obj.welfare + "	" + obj.holiday + "	" + obj.businessSummary + "	" + obj.address + "	" + obj.established + "	" + obj.represenTative + "	" + obj.numberOfEmployees + "	" + obj.capital + "	" + obj.listedMarketName + "	" + obj.aveAge + "	" + obj.companyUrl + "	" + obj.url + "	" + obj.job + "	"
+    let text = ''+obj.name + '	"' + obj.jobDescription + '"	"' + obj.targetPerson + '"	"' + obj.selectionPoints + '"	"' + obj.workLocation + '"	"' + obj.workingHours + '"	"' + obj.employmentStatus + '"	"' + obj.salary + '"	"' + obj.welfare + '"	"' + obj.holiday + '"	"' + obj.businessSummary + '"	"' + obj.address + '"	"' + obj.established + '"	"' + obj.represenTative + '"	"' + obj.numberOfEmployees + '"	"' + obj.capital + '"	"' + obj.listedMarketName + '"	"' + obj.aveAge + '"	"' + obj.companyUrl + '"	"' + obj.url + '"	' + obj.job + ''
     let write = Application.currentApplication(); // 現在実行しているアプリケーションを取得
     write.includeStandardAdditions = true;
     write.doShellScript("echo '" + text + "'>>text.text");
@@ -66,31 +66,31 @@ let getData = function () {
     a.forEach(i => {
         switch (i.children[0].innerText) {
             case '仕事内容':
-                tempInfo.jobDescription = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.jobDescription = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '対象となる方':
-                tempInfo.targetPerson = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.targetPerson = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '選考のポイント':
-                tempInfo.selectionPoints = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.selectionPoints = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '勤務地':
-                tempInfo.workLocation = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.workLocation = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '勤務時間':
-                tempInfo.workingHours = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.workingHours = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '雇用形態':
-                tempInfo.employmentStatus = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.employmentStatus = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '給与':
-                tempInfo.salary = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.salary = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '待遇・福利厚生':
-                tempInfo.welfare = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.welfare = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '休日・休暇':
-                tempInfo.holiday = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.holiday = i.children[1].innerText.replace(/"/g," ")
                 break;
             default:
                 break;
@@ -106,31 +106,31 @@ const getCompanyProfile = function () {
     a.forEach(i => {
         switch (i.children[0].innerText) {
             case '事業概要':
-                tempInfo.businessSummary = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.businessSummary = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '所在地':
-                tempInfo.address = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.address = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '設立':
-                tempInfo.established = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.established = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '代表者':
-                tempInfo.represenTative = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.represenTative = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '従業員数':
-                tempInfo.numberOfEmployees = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.numberOfEmployees = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '上場市場名':
-                tempInfo.listedMarketName = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.listedMarketName = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '資本金':
-                tempInfo.capital = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.capital = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '平均年齢':
-                tempInfo.aveAge = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.aveAge = i.children[1].innerText.replace(/"/g," ")
                 break;
             case '企業url':
-                tempInfo.companyUrl = i.children[1].innerText.replace(/\n/g, "")
+                tempInfo.companyUrl = i.children[1].innerText.replace(/"/g," ")
                 break;
             default:
                 break;
