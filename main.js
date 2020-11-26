@@ -2,16 +2,65 @@
 // 関数
 /************************************************************/
 function firstWrite() {
-    let text = "会社名	" + "仕事内容	" + "対象となる方	" + "選考のポイント	" + "勤務地	" + "勤務時間	" + "雇用形態	" + "給与	" + "待遇・福利厚生	" + "休日・休暇	" + "事業概要	" + "住所	" + "設立	" + "代表者	" + "従業員数	" + "資本	" + "上場市場名	" + "平均年齢	" + "企業URL	" + "求人URL	" + "Job	"
+    let text = "会社名	" +
+        "仕事内容	" +
+        "対象となる方	" +
+        "選考のポイント	" +
+        "勤務地	" +
+        "勤務時間	" +
+        "雇用形態	" +
+        "給与	" +
+        "待遇・福利厚生	" +
+        "休日・休暇	" +
+        "事業概要	" +
+        "住所	" +
+        "設立	" +
+        "代表者	" +
+        "従業員数	" +
+        "資本	" +
+        "上場市場名	" +
+        "平均年齢	" +
+        "企業URL	" +
+        "求人URL	" +
+        "Job	" +
+        "締切日	"
     let write = Application.currentApplication(); // 現在実行しているアプリケーションを取得
     write.includeStandardAdditions = true;
     write.doShellScript("echo '" + text + "'>>text.text");
 }
 function writeFile(obj) {
-    let text = ''+obj.name + '	"' + obj.jobDescription + '"	"' + obj.targetPerson + '"	"' + obj.selectionPoints + '"	"' + obj.workLocation + '"	"' + obj.workingHours + '"	"' + obj.employmentStatus + '"	"' + obj.salary + '"	"' + obj.welfare + '"	"' + obj.holiday + '"	"' + obj.businessSummary + '"	"' + obj.address + '"	"' + obj.established + '"	"' + obj.represenTative + '"	"' + obj.numberOfEmployees + '"	"' + obj.capital + '"	"' + obj.listedMarketName + '"	"' + obj.aveAge + '"	"' + obj.companyUrl + '"	"' + obj.url + '"	' + obj.job + ''
+    let text = '' + obj.name +
+        '	"' + obj.jobDescription +
+        '"	"' + obj.targetPerson +
+        '"	"' + obj.selectionPoints +
+        '"	"' + obj.workLocation +
+        '"	"' + obj.workingHours +
+        '"	"' + obj.employmentStatus +
+        '"	"' + obj.salary +
+        '"	"' + obj.welfare +
+        '"	"' + obj.holiday +
+        '"	"' + obj.businessSummary +
+        '"	"' + obj.address +
+        '"	"' + obj.established +
+        '"	"' + obj.represenTative +
+        '"	"' + obj.numberOfEmployees +
+        '"	"' + obj.capital +
+        '"	"' + obj.listedMarketName +
+        '"	"' + obj.aveAge +
+        '"	"' + obj.companyUrl +
+        '"	"' + obj.url +
+        '"	' + obj.job +
+        '"	' + obj.dedline +
+        ''
     let write = Application.currentApplication(); // 現在実行しているアプリケーションを取得
     write.includeStandardAdditions = true;
-    write.doShellScript("echo '" + text + "'>>text.text");
+    try {
+        write.doShellScript("echo '" + text + "'>>text.text");    
+    } catch (error) {
+        console.log('errorが起きた')
+        console.log(error)
+    }
+    
 }
 function getCompName() {
     let str = document.querySelector("#wrapper > div.head_detail > div > div > h1").innerText.replace(/\n.*/, "");
@@ -53,12 +102,15 @@ function exeJavascript(app, tab, code) {
     waitLoading(windowChrome.activeTab)
     return res
 }
-
+let getDeadline = function () {
+    let dedline = document.querySelector(".meta_text").innerText.match(/～(\d+\/\d+\/\d+.*)/)[1]
+    return dedline
+}
 let getData = function () {
     let a = document.querySelectorAll("#job_description_table tr").length == 0
         ? Array.from(document.querySelectorAll(".tblDetail01.tblThDetail tr"))
         : Array.from(document.querySelectorAll("#job_description_table tr"))
-
+        let reg=/["|/]/g
     let tempInfo = {};
     let str = document.querySelector("#wrapper > div.head_detail > div > div > h1").innerText.replace(/\n.*/, "");
     str = str.replace(/\n/g, "");
@@ -66,31 +118,31 @@ let getData = function () {
     a.forEach(i => {
         switch (i.children[0].innerText) {
             case '仕事内容':
-                tempInfo.jobDescription = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.jobDescription = i.children[1].innerText.replace(reg, " ")
                 break;
             case '対象となる方':
-                tempInfo.targetPerson = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.targetPerson = i.children[1].innerText.replace(reg, " ")
                 break;
             case '選考のポイント':
-                tempInfo.selectionPoints = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.selectionPoints = i.children[1].innerText.replace(reg, " ")
                 break;
             case '勤務地':
-                tempInfo.workLocation = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.workLocation = i.children[1].innerText.replace(reg, " ")
                 break;
             case '勤務時間':
-                tempInfo.workingHours = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.workingHours = i.children[1].innerText.replace(reg, " ")
                 break;
             case '雇用形態':
-                tempInfo.employmentStatus = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.employmentStatus = i.children[1].innerText.replace(reg, " ")
                 break;
             case '給与':
-                tempInfo.salary = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.salary = i.children[1].innerText.replace(reg, " ")
                 break;
             case '待遇・福利厚生':
-                tempInfo.welfare = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.welfare = i.children[1].innerText.replace(reg, " ")
                 break;
             case '休日・休暇':
-                tempInfo.holiday = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.holiday = i.children[1].innerText.replace(reg, " ")
                 break;
             default:
                 break;
@@ -103,34 +155,35 @@ const getCompanyProfile = function () {
         ? Array.from(document.querySelectorAll(".modDetail04 dl"))
         : Array.from(document.querySelectorAll("#company_profile_table tr"))
     let tempInfo = {}
+    let reg=/["|/]/g
     a.forEach(i => {
         switch (i.children[0].innerText) {
             case '事業概要':
-                tempInfo.businessSummary = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.businessSummary = i.children[1].innerText.replace(reg, " ")
                 break;
             case '所在地':
-                tempInfo.address = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.address = i.children[1].innerText.replace(reg, " ")
                 break;
             case '設立':
-                tempInfo.established = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.established = i.children[1].innerText.replace(reg, " ")
                 break;
             case '代表者':
-                tempInfo.represenTative = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.represenTative = i.children[1].innerText.replace(reg, " ")
                 break;
             case '従業員数':
-                tempInfo.numberOfEmployees = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.numberOfEmployees = i.children[1].innerText.replace(reg, " ")
                 break;
             case '上場市場名':
-                tempInfo.listedMarketName = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.listedMarketName = i.children[1].innerText.replace(reg, " ")
                 break;
             case '資本金':
-                tempInfo.capital = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.capital = i.children[1].innerText.replace(reg, " ")
                 break;
             case '平均年齢':
-                tempInfo.aveAge = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.aveAge = i.children[1].innerText.replace(reg, " ")
                 break;
             case '企業url':
-                tempInfo.companyUrl = i.children[1].innerText.replace(/"/g," ")
+                tempInfo.companyUrl = i.children[1].innerText.replace(reg, " ")
                 break;
             default:
                 break;
@@ -173,6 +226,23 @@ let kyujinClick = function () {
 }
 let companyClick = function () {
     document.querySelectorAll('.company.width688')[index].click()
+}
+// システム系
+const getWindow = function (app) {
+    let window = null, searchTab = null, clickTab = null
+    for (let i = 0; i < app.windows.length; i++) {
+        for (let j = 0; j < app.windows[i].tabs.length; j++) {
+            if (app.windows[i].tabs[j].title().match(/転職・求人情報- doda/)) {
+                window = app.windows[i]
+                searchTab = app.windows[i].tabs[j]
+                if (app.windows[i].tabs.length != j + 1) clickTab = app.windows[i].tabs[j + 1]
+                break;
+            }else {
+                clickTab=app.windows[i].tabs[j]
+            }
+        }
+    }
+    return ({ window, searchTab, clickTab })
 }
 
 /************************************************************/
@@ -231,13 +301,14 @@ if (windowChrome !== null) {
                 ? exeJavascript(app, windowChrome.activeTab, funcToObj(getCompanyProfile))
                 : {}
 
-            Object.assign(tempInfo,data,compData)
+            Object.assign(tempInfo, data, compData)
             tempInfo.url = windowChrome.activeTab.url()
+            tempInfo.dedline = exeJavascript(app, windowChrome.activeTab, funcToObj(getDeadline))
             writeFile(tempInfo)
             windowChrome.activeTab.close()
             // info.push(tempInfo)
         }
-        
+
     } while (exeJavascript(app, windowChrome.tabs[0], funcToObj(nextButton)))
 
 } else {
