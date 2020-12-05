@@ -1,3 +1,4 @@
+let textName="new.text"
 /************************************************************/
 // 関数
 /************************************************************/
@@ -26,7 +27,13 @@ function firstWrite() {
         "締切日	"
     let write = Application.currentApplication(); // 現在実行しているアプリケーションを取得
     write.includeStandardAdditions = true;
-    write.doShellScript("echo '" + text + "'>>text.text");
+    try {
+        write.doShellScript("ls " + textName);    
+    } catch (error) {
+        write.doShellScript("touch " + textName);    
+    }
+    
+    write.doShellScript("echo '" + text + "'>>"+textName);
 }
 function writeFile(obj) {
     let text = '' + obj.name +
@@ -49,13 +56,14 @@ function writeFile(obj) {
         '"	"' + obj.aveAge +
         '"	"' + obj.companyUrl +
         '"	"' + obj.url +
-        '"	' + obj.job +
+        '"	"' + obj.job +
+        '"	"' + obj.start +
         '"	' + obj.dedline +
         ''
     let write = Application.currentApplication(); // 現在実行しているアプリケーションを取得
     write.includeStandardAdditions = true;
     try {
-        write.doShellScript("echo '" + text + "'>>text.text");    
+        write.doShellScript("echo '" + text + "'>>"+textName);    
     } catch (error) {
         console.log('errorが起きた')
         console.log(error)
@@ -78,17 +86,22 @@ function duplicateCheck(search) {
     var app = Application.currentApplication(); // 現在実行しているアプリケーションを取得
     app.includeStandardAdditions = true;
     try {
-        let text = app.doShellScript("find text.text -type f | xargs grep '" + search + "'"); // lsコマンド
-        console.log('すでにある')
+        app.doShellScript("ls " + textName);    
+    } catch (error) {
+        app.doShellScript("touch " + textName);    
+    }
+    try {
+        let text = app.doShellScript("find "+textName+" -type f | xargs grep '" + search + "'"); // lsコマンド
+        // console.log('すでにある')
         return 1;
     } catch (error) {
-        console.log('まだ追加してない')
+        // console.log('まだ追加してない')
         return 0;
     }
 }
 
 function nextButton() {
-    let nextButton = document.querySelector("#shStart > div:nth-child(11) > div > div.boxRight.clrFix > ul.btnTypeSelect02.parts.clrFix > li.btn_r.last").firstElementChild
+    let nextButton = document.querySelector(".btn_r.last").firstElementChild
     if (nextButton.href) {
         nextButton.click()
         return 1;
@@ -103,14 +116,16 @@ function exeJavascript(app, tab, code) {
     return res
 }
 let getDeadline = function () {
-    let dedline = document.querySelector(".meta_text").innerText.match(/～(\d+\/\d+\/\d+.*)/)[1]
-    return dedline
+    let day = document.querySelector(".meta_text").innerText.match(/(\d+\/\d+\/\d+.*)～(\d+\/\d+\/\d+.*)/)
+    let start = day[1]
+    let dedline=day[2]
+    return ({start,dedline})
 }
 let getData = function () {
     let a = document.querySelectorAll("#job_description_table tr").length == 0
         ? Array.from(document.querySelectorAll(".tblDetail01.tblThDetail tr"))
         : Array.from(document.querySelectorAll("#job_description_table tr"))
-        let reg=/["|/]/g
+        let reg=/["'']/g
     let tempInfo = {};
     let str = document.querySelector("#wrapper > div.head_detail > div > div > h1").innerText.replace(/\n.*/, "");
     str = str.replace(/\n/g, "");
@@ -155,7 +170,7 @@ const getCompanyProfile = function () {
         ? Array.from(document.querySelectorAll(".modDetail04 dl"))
         : Array.from(document.querySelectorAll("#company_profile_table tr"))
     let tempInfo = {}
-    let reg=/["|/]/g
+    let reg=/["'/]/g
     a.forEach(i => {
         switch (i.children[0].innerText) {
             case '事業概要':
@@ -228,8 +243,8 @@ let companyClick = function () {
     document.querySelectorAll('.company.width688')[index].click()
 }
 // システム系
-const getWindow = function (app) {
-    let window = null, searchTab = null, clickTab = null
+const getTab = function (app) {
+    let window = null, searchTab = null, clickTab = null,tab=null
     for (let i = 0; i < app.windows.length; i++) {
         for (let j = 0; j < app.windows[i].tabs.length; j++) {
             if (app.windows[i].tabs[j].title().match(/転職・求人情報- doda/)) {
@@ -238,7 +253,7 @@ const getWindow = function (app) {
                 if (app.windows[i].tabs.length != j + 1) clickTab = app.windows[i].tabs[j + 1]
                 break;
             }else {
-                clickTab=app.windows[i].tabs[j]
+                clickTab=searchTab
             }
         }
     }
@@ -258,12 +273,13 @@ let windowChrome = null,
     tab = null;
 
 for (let i = 0; i < app.windows.length; i++) {
-    if (app.windows[i].name().match(/転職・求人情報- doda/)) {
+    if (app.windows[i].name().match(/(転職・求人情報- doda)|(doda\.jp)/)) {
         windowChrome = app.windows[i]
         break;
     }
 }
 if (windowChrome !== null) {
+    let count = 0;
 
     do {
         // 要素数取得(会社の数だけ)
@@ -272,15 +288,15 @@ if (windowChrome !== null) {
         let info = []
         for (let i = 0; i < companies.length; i++) {
             let tempInfo = {}
-            console.log('')
-            console.log(i + "番目")
+            // console.log('')
+            // console.log(i + "番目")
             let str = getJobDesc.toString().replace(/index/g, i)
             let jobDesc = exeJavascript(app, windowChrome.tabs[0], strToObj(str));
             if (duplicateCheck(jobDesc)) {
-                console.log('スキップ')
+                // console.log('スキップ')
                 continue
             } else {
-                console.log('継続')
+                // console.log('継続')
             }
             tempInfo.job = jobDesc
 
@@ -303,10 +319,14 @@ if (windowChrome !== null) {
 
             Object.assign(tempInfo, data, compData)
             tempInfo.url = windowChrome.activeTab.url()
-            tempInfo.dedline = exeJavascript(app, windowChrome.activeTab, funcToObj(getDeadline))
+            let day=exeJavascript(app, windowChrome.activeTab, funcToObj(getDeadline))
+            tempInfo.dedline = day.dedline
+            tempInfo.start = day.start
             writeFile(tempInfo)
             windowChrome.activeTab.close()
             // info.push(tempInfo)
+            count++;
+            console.log(count + "個追加")
         }
 
     } while (exeJavascript(app, windowChrome.tabs[0], funcToObj(nextButton)))

@@ -210,6 +210,7 @@ for (let i = 0; i < app.windows.length; i++) {
 }
 
 if (windowChrome !== null) {
+    let count = 0;
     do {
         let jobLength = exeJavascript(app, windowChrome.tabs[0], funcToObj(gg))
         for (let i = 0; i < jobLength; i++) {
@@ -244,6 +245,8 @@ if (windowChrome !== null) {
             // writeText(text)
             // writeText(lll)
             windowChrome.activeTab.close();
+            count++;
+            console.log("【"+count + "】個追加")
         }
     } while (exeJavascript(app, windowChrome.tabs[0], funcToObj(nextButton)))
 
