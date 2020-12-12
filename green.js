@@ -88,8 +88,8 @@ let gg = function () {
 }
 function getOccupation() {
     let el = document.querySelectorAll('.mdl-card__title-text')[index]
-    let companyName = document.querySelectorAll('.job-card__company-name')[index].innerText.replace(/open_in_new/, "")
-    let judgement = el.innerText.replace(/open_in_new/, "")
+    let companyName = document.querySelectorAll('.job-card__company-name')[index].innerText.replace(/open_in_new|["\s]/g, "")
+    let judgement = el.innerText.replace(/open_in_new|["”*\[\]\s]/g, "")
     return ({
         companyName, judgement
     })
@@ -198,6 +198,7 @@ if (windowChrome !== null) {
                 continue
             } else {
                 // console.log('継続')
+                console.log(res.judgement)
             }
             try {
                 // クリック

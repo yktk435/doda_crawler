@@ -289,7 +289,7 @@ if (windowChrome !== null) {
         for (let i = 0; i < companies.length; i++) {
             let tempInfo = {}
             // console.log('')
-            // console.log(i + "番目")
+            console.log(i + "番目")
             let str = getJobDesc.toString().replace(/index/g, i)
             let jobDesc = exeJavascript(app, windowChrome.tabs[0], strToObj(str));
             if (duplicateCheck(jobDesc)) {
