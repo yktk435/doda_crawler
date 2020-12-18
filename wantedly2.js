@@ -18,14 +18,23 @@ function writeFile(obj) {
 }
 
 function getJobDesc() {
-    let res = '';
     let all = Array.from(document.querySelectorAll('article'))
     let chose = all.filter(i => {
         if (i.className.match(/projects/)) return i
     })
-    let job = chose[index].querySelector('.project-title').innerText
-    let companyName = chose[index].querySelector('.company-name a').innerText.replace(/[*"/[]]/g, "")
-    return { companyName, job };
+    let jobs = chose.map(i => {
+        console.log(i.querySelector('.project-title').innerText)
+        return i.querySelector('.project-title').innerText
+    })
+    let companyNames = chose.map(i => {
+        console.log(i.querySelector('.company-name a').innerText)
+        return i.querySelector('.company-name a').innerText.replace(/[*"/[]]/g, "")
+    })
+    let hrefs = chose.map(i => {
+        console.log(i.querySelector('.project-title a').href)
+        return i.querySelector('.project-title a').href
+    })
+    return { companyNames, jobs, hrefs };
 }
 
 function duplicateCheck(search) {
@@ -57,6 +66,9 @@ function nextButton() {
         return 0;
     }
 }
+function getCurrentCount(){
+return document.querySelector('.current').innerText
+}
 function exeJavascript(app, tab, code) {
     let res = app.execute(tab, code);
     waitLoading(windowChrome.activeTab)
@@ -77,18 +89,18 @@ let getData = function () {
     }
     let what, why, how, exam
     a = Array.from(document.querySelectorAll('.js-descriptions  .project-show-main-section.new-style'))
-    what = a.filter(i => i.innerText.match(/^なにをやっているのか/)).length ? a.filter(i => i.innerText.match(/^なにをやっているのか/))[0].innerText.replace(reg,'') : undefined
-    why = a.filter(i => i.innerText.match(/^なぜやるのか/)).length ? a.filter(i => i.innerText.match(/^なぜやるのか/))[0].innerText.replace(reg,'') : undefined
-    how = a.filter(i => i.innerText.match(/^どうやっているのか/)).length ? a.filter(i => i.innerText.match(/^どうやっているのか/))[0].innerText.replace(reg,'') : undefined
-    exam = a.filter(i => i.innerText.match(/^こんなことやります/)).length ? a.filter(i => i.innerText.match(/^こんなことやります/))[0].innerText.replace(reg,'') : undefined
+    what = a.filter(i => i.innerText.match(/^なにをやっているのか/)).length ? a.filter(i => i.innerText.match(/^なにをやっているのか/))[0].innerText.replace(reg, '') : undefined
+    why = a.filter(i => i.innerText.match(/^なぜやるのか/)).length ? a.filter(i => i.innerText.match(/^なぜやるのか/))[0].innerText.replace(reg, '') : undefined
+    how = a.filter(i => i.innerText.match(/^どうやっているのか/)).length ? a.filter(i => i.innerText.match(/^どうやっているのか/))[0].innerText.replace(reg, '') : undefined
+    exam = a.filter(i => i.innerText.match(/^こんなことやります/)).length ? a.filter(i => i.innerText.match(/^こんなことやります/))[0].innerText.replace(reg, '') : undefined
 
-    
+
     let classData = [
         { name: '所管', cl: '#asdfgghjkl', val: '' },
         { name: 'なにをやっているのか', val: what },
-        { name: 'なぜやるのか', val: why},
+        { name: 'なぜやるのか', val: why },
         { name: 'どうやっているのか', val: how },
-        { name: 'こんなことやります', val: exam},
+        { name: 'こんなことやります', val: exam },
         { name: '企業ページ', val: http },
         { name: '設立', val: es },
         { name: 'メンバー', val: member },
@@ -122,11 +134,7 @@ function strToObj(str) {
         javascript: "(" + str + ")();"
     })
 }
-function getCurrentCounts(){
-    let current = document.querySelector('.projects-count .current').innerText
-    let total = document.querySelector('.projects-count .total').innerText
-    return ({current,total})
-    }
+
 
 let gg = function () {
     let r = document.querySelectorAll('.projects-index-single').length
@@ -187,63 +195,43 @@ if (windowChrome !== null) {
     let count = 0;
 
     do {
+
         // 要素数取得(会社の数だけ)
-
-        let companies = app.execute(windowChrome.tabs[0], funcToObj(gg));
-
-        let info = []
-        let num=exeJavascript(app, windowChrome.tabs[0], strToObj(getCurrentCounts));
-        for (let i = 0; i < companies; i++) {
-            let tempInfo = []
-            // console.log('')
-            console.log(Number(num.current)+i+'/'+num.total)
-            let str = getJobDesc.toString().replace(/index/g, i)
-            let jobDesc = exeJavascript(app, windowChrome.tabs[0], strToObj(str));
-            if (duplicateCheck(jobDesc.job) || jobDesc.job.match(/さくらコマース|ヘルスベイシス/)) {
-                // console.log('スキップ')
-                
-                continue
+        let info = exeJavascript(app, windowChrome.tabs[0], funcToObj(getJobDesc))
+        console.log('a')
+        let addArr = info.jobs.map((i, index) => {
+            if (duplicateCheck(i)) {
+                console.log('スキップ')
             } else {
-                // console.log('継続')
+                console.log('継続')
+
+                return index
             }
-
-
-            str = companyClick.toString().replace(/index/g, i)
-            // i番目の会社をクリック
-            let as = exeJavascript(app, windowChrome.tabs[0], strToObj(str));
-            // str = getCompName.toString()
-
-
-
-            // 求人詳詳細をクリック
-            // let res = exeJavascript(app, windowChrome.activeTab, funcToObj(kyujinClick));
-            let data = exeJavascript(app, windowChrome.activeTab, funcToObj(getData))
-
-            // let compData = exeJavascript(app, windowChrome.activeTab, funcToObj(getCompanyProfile))
-            //     ? exeJavascript(app, windowChrome.activeTab, funcToObj(getCompanyProfile))
-            //     : {}
-            tempInfo = tempInfo.concat([{ name: '会社名', val: jobDesc.companyName }])
-            tempInfo = tempInfo.concat(data)
-            tempInfo = tempInfo.concat([{ name: '判定文字', val: jobDesc.job }])
-            tempInfo = tempInfo.concat({ name: '求人URL', val: windowChrome.activeTab.url() })
-            let undefinedCount = 0
-
-
-            tempInfo.forEach(i => {
-                if (i.val === undefined) undefinedCount++
-            })
-            if (undefinedCount < 7) { writeFile(tempInfo) }
-            else {
-                console.log(undefinedCount)
-                console.log('書き込みなし')
+        })
+        let tabCount=3
+        addArr.forEach((i, index) => {
+            //五つ以上タブを開いているなら
+            if (windowChrome.tabs().length >= tabCount) {
+                while (windowChrome.tabs().length <= tabCount) {
+                    for (let j = 0; j<tabCount; j++) {
+                        
+                        if (windowChrome.tabs().length < j+1) j = 1
+                        if (!windowChrome.tabs[j].loading()) {
+                            console.log('読み込み完了')
+                            windowChrome.tabs[j].close()
+                            break;
+                        }    
+                    }
+                    
+                }
+            } else {
+                //タブを開く
+                let str = companyClick.toString().replace(/index/g, i)
+                app.execute(windowChrome.tabs[0], strToObj(str))
             }
+        })
+        
 
-            windowChrome.activeTab.close()
-            // info.push(tempInfo)
-            count++;
-            console.log(count + "個追加")
-            
-        }
 
     } while (exeJavascript(app, windowChrome.tabs[0], funcToObj(nextButton)))
 

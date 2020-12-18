@@ -1,4 +1,4 @@
-let textName = "type.text"
+let textName = "new2.text"
 /************************************************************/
 // 関数
 /************************************************************/
@@ -16,12 +16,11 @@ function writeFile(obj) {
     }
 
 }
-
+    
 function getJobDesc() {
     let res = '';
     let companyName = document.querySelectorAll('.company.size-14px span')[index].innerText
-    let job = document.querySelectorAll(".mod-job-info-item h2 a")[index].innerText.replace(/[*"/[]]/g, "")
-
+    let job = document.querySelectorAll(".mod-job-info-item h2 a")[index].innerText.replace(/[*"/\[\]]/g, "")
     return { companyName, job };
 }
 
@@ -174,13 +173,15 @@ for (let i = 0; i < app.windows.length; i++) {
     }
 }
 if (windowChrome !== null) {
+    
     let count = 0;
 
     do {
         // 要素数取得(会社の数だけ)
-
+        
         let companies = app.execute(windowChrome.tabs[0], funcToObj(gg));
         let info = []
+        console.log(companies)
         for (let i = 0; i < companies; i++) {
             let tempInfo = []
             // console.log('')

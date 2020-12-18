@@ -53,6 +53,7 @@ const waitLoading = function (tab) {
 function write2(arr) {
     let text =
         "\"" + arr.companyName + "\"	" +//
+        "\"\"	" +
         "\"" + arr.point + "\"	" +
         "\"" + arr.jobDescription + "\"	" +
         "\"" + arr.target + "\"	" +

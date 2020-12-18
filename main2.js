@@ -1,4 +1,4 @@
-const TEXTNAME = "new.text"
+const TEXTNAME = "new2.text"
 //検索画面に表示されている会社名を取得するセレクタ
 const COMPANY_NAME_SELECTOR = '.company.width688'
 const COMPANY_COUNT_SELECTOR = '.company.width688'
@@ -178,7 +178,8 @@ let windowChrome = null,
     tab = null;
 
 for (let i = 0; i < app.windows.length; i++) {
-    if (app.windows[i].name().match(/(転職・求人情報- doda)|(doda\.jp)/)) {
+    console.log(app.windows[i].name())
+    if (app.windows[i].name().match(/^(?=.*転職)(?=.*doda)|https:\/\/doda\.jp.*$/)) {
         windowChrome = app.windows[i]
         break;
     }
@@ -191,7 +192,6 @@ if (windowChrome !== null) {
         // 要素数取得(会社の数だけ)
         
         let companies = app.execute(windowChrome.tabs[0], funcToObj(gg));
-        console.log('a')
         console.log(companies)
 
         let info = []
