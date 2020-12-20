@@ -176,30 +176,33 @@ for (let i = 0; i < app.windows.length; i++) {
         break;
     }
 }
-
+let rm = ['機械学習', 'AI', 'DBエンジニア', 'セールス', 'コンサル', '社内SE', 'マネージャ', 'リーダ', 'CTO']
 if (windowChrome !== null) {
     let count = 0;
     let allLength = exeJavascript(app, windowChrome.tabs[0], funcToObj(jobLength))
     do {
         // 一番下へ移動
         exeJavascript(app, windowChrome.tabs[0], funcToObj(toBottom))
-        delay(3)
+        // delay(3)
         let jobLength = exeJavascript(app, windowChrome.tabs[0], funcToObj(gg))
         for (let i = 0; i < jobLength; i++) {
-            // 一番下へ移動
-            exeJavascript(app, windowChrome.tabs[0], funcToObj(toBottom))
+            if (i % 10 == 0) {
+                // 一番下へ移動
+                exeJavascript(app, windowChrome.tabs[0], funcToObj(toBottom))
+            }
+
             jobLength = exeJavascript(app, windowChrome.tabs[0], funcToObj(gg))
             let data = {}
             // 検索一覧画面
-            console.log(i + "/", jobLength)
+            console.log(i + "/", jobLength + '  ' + count + '個追加')
             // 説明を読み込み
             let res = exeJavascript(app, windowChrome.tabs[0], strToObj(getOccupation.toString().replace(/index/g, i)))
-            if (duplicateCheck(res.judgement) || res.judgement.match(/機械学習|AI/)) {
+            if (duplicateCheck(res.judgement) || rm.filter(i => res.judgement.includes(i))) {
                 // console.log('スキップ')
                 continue
             } else {
                 // console.log('継続')
-                console.log(res.judgement)
+                // console.log(res.judgement)
             }
             try {
                 // クリック
@@ -216,7 +219,7 @@ if (windowChrome !== null) {
                 write2(data)
                 windowChrome.activeTab.close();
                 count++;
-                console.log("【" + count + "】個追加")
+                // console.log("【" + count + "】個追加")
             } catch (error) {
                 windowChrome.activeTab.close();
             }

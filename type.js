@@ -16,7 +16,7 @@ function writeFile(obj) {
     }
 
 }
-    
+
 function getJobDesc() {
     let res = '';
     let companyName = document.querySelectorAll('.company.size-14px span')[index].innerText
@@ -172,24 +172,25 @@ for (let i = 0; i < app.windows.length; i++) {
         break;
     }
 }
+let rm = ['機械学習', 'AI', 'DBエンジニア', 'セールス', 'コンサル', '社内SE', 'マネージャ', 'リーダ', 'CTO', 'インフラエンジニア', 'EC','ゲーム']
 if (windowChrome !== null) {
-    
+
     let count = 0;
 
     do {
         // 要素数取得(会社の数だけ)
-        
+
         let companies = app.execute(windowChrome.tabs[0], funcToObj(gg));
         let info = []
         console.log(companies)
         for (let i = 0; i < companies; i++) {
             let tempInfo = []
             // console.log('')
-            console.log(i + "番目")
+            console.log(i + "番目  " + count + "個追加")
             let str = getJobDesc.toString().replace(/index/g, i)
             let jobDesc = exeJavascript(app, windowChrome.tabs[0], strToObj(str));
+            if (duplicateCheck(jobDesc.job) || rm.filter(i => jobDesc.job.includes(i)).length) {
 
-            if (duplicateCheck(jobDesc.job)) {
                 // console.log('スキップ')
                 continue
             } else {
@@ -225,7 +226,7 @@ if (windowChrome !== null) {
             windowChrome.activeTab.close()
             // info.push(tempInfo)
             count++;
-            console.log(count + "個追加")
+            // console.log(count + "個追加")
         }
 
     } while (exeJavascript(app, windowChrome.tabs[0], funcToObj(nextButton)))

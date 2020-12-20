@@ -1,4 +1,5 @@
 const TEXTNAME = "new2.text"
+// const TEXTNAME = "remove.text"
 //検索画面に表示されている会社名を取得するセレクタ
 const COMPANY_NAME_SELECTOR = '.company.width688'
 const COMPANY_COUNT_SELECTOR = '.company.width688'
@@ -25,7 +26,7 @@ function writeFile(obj) {
 function getJobDesc() {
     let res = '';
     let companyName = document.querySelectorAll('.company.width688')[index].innerText.replace(/NEW/,'')
-    let job = document.querySelectorAll(".job.width688")[index].textContent
+    let job = document.querySelectorAll(".job.width688")[index].innerText.replace(/[/／.*]/g, '')
     return { companyName, job };
 }
 
@@ -132,7 +133,11 @@ function strToObj(str) {
     })
 }
 
-
+let getCounter = function () {
+    let number = document.querySelector('.number').innerText.replace(/,/, '')
+    let counter=document.querySelector('.counter').innerText.match(/件中\s(\d+)/)[1]
+    return ({number,counter})
+}
 let gg = function () {
     let r = document.querySelectorAll('.company.width688').length
     return r 
@@ -178,13 +183,13 @@ let windowChrome = null,
     tab = null;
 
 for (let i = 0; i < app.windows.length; i++) {
-    console.log(app.windows[i].name())
+    // console.log(app.windows[i].name())
     if (app.windows[i].name().match(/^(?=.*転職)(?=.*doda)|https:\/\/doda\.jp.*$/)) {
         windowChrome = app.windows[i]
         break;
     }
 }
-
+let rm = ['機械学習', 'AI', 'DBエンジニア', 'セールス', 'コンサル', '社内SE', 'マネージャ', 'リーダ', 'CTO','インフラエンジニア','EC']
 if (windowChrome !== null) {
     let count = 0;
 
@@ -192,17 +197,17 @@ if (windowChrome !== null) {
         // 要素数取得(会社の数だけ)
         
         let companies = app.execute(windowChrome.tabs[0], funcToObj(gg));
-        console.log(companies)
-
+        // console.log(companies)
         let info = []
         for (let i = 0; i < companies; i++) {
+            let counter=exeJavascript(app, windowChrome.tabs[0], funcToObj(getCounter));
             let tempInfo = []
             // console.log('')
-            console.log(i + "番目")
+            console.log(Number(counter.counter)+i + "/"+counter.number+'  '+count+'個追加')
             let str = getJobDesc.toString().replace(/index/g, i)
             let jobDesc = exeJavascript(app, windowChrome.tabs[0], strToObj(str));
 
-            if (duplicateCheck(jobDesc.job)) {
+            if (duplicateCheck(jobDesc.job) || rm.filter(i => jobDesc.job.includes(i)).length) {
                 // console.log('スキップ')
                 continue
             } else {
@@ -233,12 +238,12 @@ if (windowChrome !== null) {
                 if (i.val === undefined) undefinedCount++
             })
             if (undefinedCount < 7) writeFile(tempInfo)
-            else console.log(tempInfo[0].val)
+            // else console.log(tempInfo[0].val)
 
             windowChrome.activeTab.close()
             // info.push(tempInfo)
             count++;
-            console.log(count + "個追加")
+            // console.log(count + "個追加")
         }
 
     } while (exeJavascript(app, windowChrome.tabs[0], funcToObj(nextButton)))
