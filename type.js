@@ -20,7 +20,7 @@ function writeFile(obj) {
 function getJobDesc() {
     let res = '';
     let companyName = document.querySelectorAll('.company.size-14px span')[index].innerText
-    let job = document.querySelectorAll(".mod-job-info-item h2 a")[index].innerText.replace(/[*"/\[\]]/g, "")
+    let job = document.querySelectorAll(".mod-job-info-item h2 a")[index].innerText.replace(/[／*"/\[\]]/g, "")
     return { companyName, job };
 }
 

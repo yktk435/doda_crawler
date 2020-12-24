@@ -24,7 +24,7 @@ function getJobDesc() {
         if (i.className.match(/projects/)) return i
     })
     let job = chose[index].querySelector('.project-title').innerText
-    let companyName = chose[index].querySelector('.company-name a').innerText.replace(/[*"/[]]/g, "")
+    let companyName = chose[index].querySelector('.company-name a').innerText.replace(/[*"/／[]]/g, "")
     return { companyName, job };
 }
 
