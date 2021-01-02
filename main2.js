@@ -198,7 +198,6 @@ if (windowChrome !== null) {
         
         let companies = app.execute(windowChrome.tabs[0], funcToObj(gg));
         // console.log(companies)
-        let info = []
         for (let i = 0; i < companies; i++) {
             let counter=exeJavascript(app, windowChrome.tabs[0], funcToObj(getCounter));
             let tempInfo = []
@@ -237,8 +236,9 @@ if (windowChrome !== null) {
             tempInfo.forEach(i => {
                 if (i.val === undefined) undefinedCount++
             })
-            if (undefinedCount < 7) writeFile(tempInfo)
+            // if (undefinedCount < 7) writeFile(tempInfo)
             // else console.log(tempInfo[0].val)
+            writeFile(tempInfo)
 
             windowChrome.activeTab.close()
             // info.push(tempInfo)

@@ -176,7 +176,7 @@ for (let i = 0; i < app.windows.length; i++) {
         break;
     }
 }
-let rm = ['機械学習', 'AI', 'DBエンジニア', 'セールス', 'コンサル', '社内SE', 'マネージャ', 'リーダ', 'CTO']
+let rm = ['機械学習', 'AI', 'DBエンジニア', 'セールス', 'コンサル', '社内SE', 'マネージャ', 'リーダ', 'CTO','ネットワークエンジニア']
 if (windowChrome !== null) {
     let count = 0;
     let allLength = exeJavascript(app, windowChrome.tabs[0], funcToObj(jobLength))
@@ -197,7 +197,8 @@ if (windowChrome !== null) {
             console.log(i + "/", jobLength + '  ' + count + '個追加')
             // 説明を読み込み
             let res = exeJavascript(app, windowChrome.tabs[0], strToObj(getOccupation.toString().replace(/index/g, i)))
-            if (duplicateCheck(res.judgement) || rm.filter(i => res.judgement.includes(i))) {
+            
+            if (duplicateCheck(res.judgement) || rm.filter(i => res.judgement.includes(i)).length) {
                 // console.log('スキップ')
                 continue
             } else {

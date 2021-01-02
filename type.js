@@ -221,7 +221,9 @@ if (windowChrome !== null) {
             tempInfo.forEach(i => {
                 if (i.val === undefined) undefinedCount++
             })
-            if (undefinedCount < 7) writeFile(tempInfo)
+            // if (undefinedCount < 7) writeFile(tempInfo)
+            // else { console.log('書き込みなし')}
+            writeFile(tempInfo)
 
             windowChrome.activeTab.close()
             // info.push(tempInfo)
