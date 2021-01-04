@@ -1,35 +1,12 @@
 /************************************************************/
-// 定数
-/************************************************************/
-
-const deleteWord = ['機械学習', 'AI', 'DBエンジニア', 'セールス', 'コンサル', '社内SE', 'マネージャ', 'リーダ', 'CTO', 'インフラエンジニア', 'EC','介護']
-/************************************************************/
 // 関数
 /************************************************************/
-
 const stdin = function () {
     ObjC.import('readline');
     let argvStr = $.readline('入力： ');
     // console.log(`入力されたのは ${argvStr} です`);
     return Number(argvStr);
 }
-const write = function (arr) {
-    let text = '';
-    let app = Application.currentApplication(); // 現在実行しているアプリケーションを取得
-    app.includeStandardAdditions = true;
-    // arr.forEach(i => text += '"' + i.val + '"	')
-    text = `"${arr.join('"	"')}"`
-    try {
-        app.doShellScript("echo '" + text + "'>>" + TEXTNAME);
-    } catch (error) {
-        console.log(`errorが起きた ${error}`)
-    }
-}
-/************************************************************/
-// システム系
-/************************************************************/
-
-
 /************************************************************/
 // クラス
 /************************************************************/
@@ -73,7 +50,7 @@ class Base {
             javascript: "(" + str + ")();"
         })
     }
-    exeJavascript(tab, code, i) {
+    exeJs(tab, code, i) {
         let obj = this.funcToObj(code)
         if (i != null) obj = this.funcToObjwithIndexToI(code, i)
 
@@ -97,9 +74,9 @@ class Base {
         }
         try {
             if (this.removeWords.filter(i => words.includes(i)).length) {
-                console.log(`除外ワード: ${words} `)
+                console.log(`                         【除外ワード】: ${words} `)
                 return 1
-            } 
+            }
             let text = app.doShellScript("find " + this.fileName + " -type f | xargs grep '" + words + "'"); // lsコマンド
 
             // console.log('すでにある')
@@ -110,16 +87,25 @@ class Base {
             return 0;
         }
     }
-    write(arr) {
+    write(data, jobDesc) {
+        let formatedData = this.formatTheData(data, jobDesc)
         let text = '';
         let app = Application.currentApplication(); // 現在実行しているアプリケーションを取得
         app.includeStandardAdditions = true;
-        arr.forEach(i => text += '"' + i.val + '"	')
+        formatedData.forEach(i => text += '"' + i.val + '"	')
         try {
             app.doShellScript("echo '" + text + "'>>" + this.fileName);
         } catch (error) {
             console.log(`errorが起きた ${error}`)
         }
+    }
+    formatTheData(data, jobDesc) {
+        let tempInfo = []
+        tempInfo = tempInfo.concat([{ name: '会社名', val: jobDesc.companyName }])
+        tempInfo = tempInfo.concat(data)
+        tempInfo = tempInfo.concat([{ name: '判定文字', val: jobDesc.job }])
+        tempInfo = tempInfo.concat({ name: '求人URL', val: this.windowChrome.activeTab.url() })
+        return tempInfo
     }
 
 
@@ -225,7 +211,7 @@ class Type extends Base {
 
         return ({
             counter: document.querySelector('.segment-num span.num').innerText.match(/(\d+)/)[0],
-            number:document.querySelector('.whole-num span.num').innerText.match(/(\d+)/)[0]
+            number: document.querySelector('.whole-num span.num').innerText.match(/(\d+)/)[0]
         })
     }
     getNumberOfCompany() {
@@ -323,37 +309,27 @@ try {
 
     let count = 0
     do {
-        let companies = main.exeJavascript(main.windowChrome.tabs[0], main.getNumberOfCompany)
-        
-        for (let i = 0; i < companies; i++) {
-            let counter = main.exeJavascript(main.windowChrome.tabs[0], main.getCounter);
-            let tempInfo = []
+        let companies = main.exeJs(main.windowChrome.tabs[0], main.getNumberOfCompany)
+
+        for (let i = 0; i < companies; i++, count++) {
+            let counter = main.exeJs(main.windowChrome.tabs[0], main.getCounter);
             console.log(Number(counter.counter) + i + "/" + counter.number + '  ' + count + '個追加')
-            let jobDesc = main.exeJavascript(main.windowChrome.tabs[0], main.getJobDesc, i);
-
-            if (main.duplicateCheck(jobDesc.job)) {
-                // console.log('スキップ')
-                continue
-            } else {
-                // console.log('継続')
-            }
+            let jobDesc = main.exeJs(main.windowChrome.tabs[0], main.getJobDesc, i);
+            // 情報重複チェック
+            if (main.duplicateCheck(jobDesc.job)) continue
             // i番目の会社をクリック
-            main.exeJavascript(main.windowChrome.tabs[0], main.companyClick, i)
+            main.exeJs(main.windowChrome.tabs[0], main.companyClick, i)
             // 詳細をクリック
-            main.exeJavascript(main.windowChrome.activeTab, main.kyujinClick)
+            main.exeJs(main.windowChrome.activeTab, main.kyujinClick)
             // データ取得
-            let data = main.exeJavascript(main.windowChrome.activeTab, main.getData)
-
-
-            tempInfo = tempInfo.concat([{ name: '会社名', val: jobDesc.companyName }])
-            tempInfo = tempInfo.concat(data)
-            tempInfo = tempInfo.concat([{ name: '判定文字', val: jobDesc.job }])
-            tempInfo = tempInfo.concat({ name: '求人URL', val: main.windowChrome.activeTab.url() })
-            main.write(tempInfo)
+            let data = main.exeJs(main.windowChrome.activeTab, main.getData)
+            // データを整形して書き込み
+            main.write(data, jobDesc)
+            // タブを閉じる
             main.windowChrome.activeTab.close()
-            count++;
+            delay(1000)
         }
-    } while (main.exeJavascript(main.windowChrome.tabs[0], main.nextButton))
+    } while (main.exeJs(main.windowChrome.tabs[0], main.nextButton))
 } catch (error) {
     console.log(error)
 }
