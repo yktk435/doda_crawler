@@ -13,14 +13,14 @@ const stdin = function () {
 // 親クラス
 class Base {
     constructor(siteNumber) {
-
+        this.re = /[／*"/\[\]]/g
         this.siteNumber = siteNumber
-        this.replace = /[／*"/\[\]]/g
         this.fileName = "new2.text"
         this.app = Application("Google Chrome");
         this.app.includeStandardAdditions = true
 
-        this.removeWords = ['機械学習', 'AI', 'DBエンジニア', 'セールス', 'コンサル', '社内SE', 'マネージャ', 'リーダ', 'CTO', 'インフラエンジニア', 'EC']
+
+
 
         // let g=this.app.displayDialog('名前は', {
         //     defaultAnswer: '',
@@ -29,6 +29,15 @@ class Base {
         //     cancelButton: 'キャンセル',
         // })
         // console.log(g.textReturned)
+    }
+    mainClick(i) {
+        this.exeJs(this.windowChrome.tabs[0], this.companyClick, i)
+    }
+    mainDetailClick() {
+        this.exeJs(this.windowChrome.activeTab, this.kyujinClick)
+    }
+    mainGetData() {
+        return main.exeJs(main.windowChrome.activeTab, main.getData)
     }
     findWindow() {
         for (let i = 0; i < this.app.windows.length; i++) {
@@ -65,6 +74,7 @@ class Base {
         return res
     }
     duplicateCheck(words) {
+        this.removeWords = ['機械学習', 'AI', 'DBエンジニア', 'セールス', 'コンサル', '社内SE', 'マネージャ', 'リーダ', 'CTO', 'インフラエンジニア', 'EC']
         let app = Application.currentApplication(); // 現在実行しているアプリケーションを取得
         app.includeStandardAdditions = true
         try {
@@ -107,6 +117,9 @@ class Base {
         tempInfo = tempInfo.concat({ name: '求人URL', val: this.windowChrome.activeTab.url() })
         return tempInfo
     }
+    condition() {
+        return this.exeJs(this.windowChrome.tabs[0], this.nextButton)
+    }
 
 
 }
@@ -137,7 +150,7 @@ class Doda extends Base {
     getJobDesc() {
         let res = '';
         let companyName = document.querySelectorAll('.company.width688')[index].innerText.replace(/NEW/, '')
-        let job = document.querySelectorAll(".job.width688")[index].innerText.replace(this.replace, '')
+        let job = document.querySelectorAll(".job.width688")[index].innerText
         return { companyName, job };
     }
     companyClick() {
@@ -220,7 +233,7 @@ class Type extends Base {
     getJobDesc() {
         let res = '';
         let companyName = document.querySelectorAll('.company.size-14px span')[index].innerText
-        let job = document.querySelectorAll(".mod-job-info-item h2 a")[index].innerText.replace(this.replace, "")
+        let job = document.querySelectorAll(".mod-job-info-item h2 a")[index].innerText
         return { companyName, job };
     }
     companyClick() {
@@ -259,9 +272,9 @@ class Type extends Base {
         res = classData.map(i => {
             if (document.querySelector(i.cl)) {
                 if (i.name == '締め切り') {
-                    i.val = document.querySelector(i.cl).innerText.match(/\d+\.\d+\.\d+/g)[1]
+                    i.val = document.querySelector(i.cl).innerText.match(/\d+\.\d+\.\d+/g)[1].replace(/\./g, '/')
                 } else if (i.name == '掲載開始日') {
-                    i.val = document.querySelector(i.cl).innerText.match(/\d+\.\d+\.\d+/g)[0]
+                    i.val = document.querySelector(i.cl).innerText.match(/\d+\.\d+\.\d+/g)[0].replace(/\./g, '/')
                 } else {
                     i.val = document.querySelector(i.cl).innerText.replace(reg, " ")
                 }
@@ -274,6 +287,148 @@ class Type extends Base {
         return res
     }
 }
+class Green extends Base {
+    init() {
+        this.removeWords = /求人検索/
+    }
+    moveToBottom() {
+        let element = document.documentElement;
+        let bottom = element.scrollHeight - element.clientHeight;
+        document.querySelector("#js-search-main").scroll(0, 10000000000000)
+    }
+    getCounter() {
+        let number = document.querySelectorAll('.number')[1].innerText
+        return ({ counter: 0, number })
+    }
+    getNumberOfCompany() {
+        return document.querySelectorAll('.mdl-card__title-text').length
+    }
+    getJobDesc() {
+        let el = document.querySelectorAll('.mdl-card__title-text')[index]
+        let companyName = document.querySelectorAll('.job-card__company-name')[index].innerText.replace(/open_in_new|["\s]/g, "")
+        let job = el.innerText.replace(/open_in_new|["”*\[\]\s]/g, "")
+        return ({
+            companyName, job
+        })
+    }
+    companyClick() {
+        let el = document.querySelectorAll('.mdl-card__title-text')[index]
+        el.click()
+    }
+    getData() {
+        let reg = /["'']/g;
+        let res = {}
+        let classData = [
+            { name: '所管', cl: '', },
+            { name: 'ポイント', cl: '', },
+            { name: '募集背景', cl: '', },
+            { name: '仕事内容', cl: '.com_content__basic-info', },
+            { name: 'キャリアパス', cl: '', },
+            { name: '応募資格', cl: '', },
+            { name: '想定年収（給与詳細）', cl: '', },
+            { name: '勤務時間', cl: '', },
+            { name: '勤務地', cl: '', },
+            { name: '休日/休暇', cl: '', },
+            { name: '福利厚生', cl: '', },
+            { name: '事業内容', cl: '', },
+            { name: '設立年月', cl: '', },
+            { name: '従業員数', cl: '', },
+            { name: '資本金', cl: '', },
+            { name: '売上高', cl: '', },
+            { name: '代表者', cl: '', },
+            { name: '平均年齢', cl: '', },
+            { name: '掲載開始日', cl: '', },
+            { name: '締め切り', cl: '', },
+        ]
+        let a = document.querySelectorAll(".com_content__main_contents tr")
+        a = Array.from(a)
+        res = classData.map(i => {
+            if (i.cl != '' && document.querySelector(i.cl)) {
+                i.val = document.querySelector(i.cl).innerText.replace(reg, '')
+            } else {
+                a.find(j => {
+                    if (i.name == j.children[0].innerText) {
+                        i.val = j.children[1].innerText.replace(reg, '')
+                    }
+                })
+            }
+
+            return i
+        })
+        return res
+    }
+    getData2() {
+        let reg = /["'']/g;
+        let res = {}
+        let classData = [
+            { name: '所管', cl: '', },
+            { name: 'ポイント', cl: '', },
+            { name: '募集背景', cl: '', },
+            { name: '仕事内容', cl: '.com_content__basic-info', },
+            { name: 'キャリアパス', cl: '', },
+            { name: '応募資格', cl: '', },
+            { name: '想定年収（給与詳細）', cl: '', },
+            { name: '勤務時間', cl: '', },
+            { name: '勤務地', cl: '', },
+            { name: '休日/休暇', cl: '', },
+            { name: '福利厚生', cl: '', },
+            { name: '事業内容', cl: '', },
+            { name: '設立年月', cl: '', },
+            { name: '従業員数', cl: '', },
+            { name: '資本金', cl: '', },
+            { name: '売上高', cl: '', },
+            { name: '代表者', cl: '', },
+            { name: '平均年齢', cl: '', },
+            { name: '掲載開始日', cl: '', },
+            { name: '締め切り', cl: '', },
+        ]
+        let a = document.querySelectorAll(".detail-content-table.js-impression tr")
+        a = Array.from(a)
+        res = classData.map(i => {
+            a.find(j => {
+                console.log(j.children.length)
+                if (j.children.length && i.name == j.children[0].innerText) {
+                    i.val = j.children[1].innerText.replace(reg, '')
+                }
+
+
+
+
+            })
+            return i
+        })
+        return res
+    }
+    getCompInfo(classData) {
+        this.exeJs(this.windowChrome.activeTab, this.clickCompInfo)
+        this.app.displayDialog('a')
+
+    }
+    clickCompInfo() {
+        document.querySelectorAll('.company-info-box__btn-area a')[1].click()
+    }
+    mainGetData() {
+        return this.greenData
+    }
+    mainDetailClick() {
+
+    }
+    mainClick(i) {
+        this.exeJs(this.windowChrome.tabs[0], this.companyClick, i)
+        let data1 = this.exeJs(this.windowChrome.activeTab, this.getData)
+        // console.log(this.greenData[3].name, this.greenData[3].val)
+        this.exeJs(this.windowChrome.activeTab, this.clickCompInfo)
+        let data2 = this.exeJs(this.windowChrome.activeTab, this.getData2)
+        for (let i = 0; i < data1.length; i++) {
+            if (data2[i].val) data1[i].val = data2[i].val
+        }
+        this.greenData = data1
+    }
+    condition(i) {
+        let counter = this.exeJs(this.windowChrome.tabs[0], this.getCounter);
+        return i>=counter.counter
+    }
+}
 /************************************************************/
 // メイン
 /************************************************************/
@@ -281,10 +436,10 @@ class Type extends Base {
 
 console.log(`
 =====================
-doda:1
-type:2
-green:3
-wantedly:4
+1 : doda
+2 : type
+3 : green
+4 : wantedly
 =====================
 `)
 
@@ -298,6 +453,9 @@ try {
         case 2:
             main = new Type(siteNumber)
             break;
+        case 3:
+            main = new Green(siteNumber)
+            break;
 
         default:
             throw new Error('正しい入力でない');
@@ -306,30 +464,39 @@ try {
 
     main.init()
     main.findWindow()
-
     let count = 0
+    let i=0
     do {
+        // Greenのみ
+        if (siteNumber == 3) main.exeJs(main.windowChrome.tabs[0], main.moveToBottom)
+
         let companies = main.exeJs(main.windowChrome.tabs[0], main.getNumberOfCompany)
 
-        for (let i = 0; i < companies; i++, count++) {
+        for (; i < companies; i++) {
+
+
             let counter = main.exeJs(main.windowChrome.tabs[0], main.getCounter);
             console.log(Number(counter.counter) + i + "/" + counter.number + '  ' + count + '個追加')
             let jobDesc = main.exeJs(main.windowChrome.tabs[0], main.getJobDesc, i);
+            jobDesc.job = jobDesc.job.replace(main.re, '')
             // 情報重複チェック
             if (main.duplicateCheck(jobDesc.job)) continue
             // i番目の会社をクリック
-            main.exeJs(main.windowChrome.tabs[0], main.companyClick, i)
+            main.mainClick(i)
+            // main.exeJs(main.windowChrome.tabs[0], main.companyClick, i)
             // 詳細をクリック
-            main.exeJs(main.windowChrome.activeTab, main.kyujinClick)
+            main.mainDetailClick()
+            // main.exeJs(main.windowChrome.activeTab, main.kyujinClick)
             // データ取得
-            let data = main.exeJs(main.windowChrome.activeTab, main.getData)
+            let data = main.mainGetData()
+            // let data = main.exeJs(main.windowChrome.activeTab, main.getData)
             // データを整形して書き込み
             main.write(data, jobDesc)
             // タブを閉じる
             main.windowChrome.activeTab.close()
-            delay(1000)
+            count++
         }
-    } while (main.exeJs(main.windowChrome.tabs[0], main.nextButton))
+    } while (main.condition(i))
 } catch (error) {
     console.log(error)
 }
