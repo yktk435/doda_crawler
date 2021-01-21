@@ -18,10 +18,6 @@ class Base {
         this.fileName = "res.text"
         this.app = Application("Google Chrome");
         this.app.includeStandardAdditions = true
-
-
-
-
         // let g=this.app.displayDialog('名前は', {
         //     defaultAnswer: '',
         //     buttons: ['キャンセル','OK'],
@@ -48,7 +44,7 @@ class Base {
         }
         
         if (this.windowChrome === undefined) throw new Error('ウィンドウが見つからない')
-        this.test()
+        // this.test()
     }
     test() {
         this.mainTabId=this.windowChrome.tabs[0].id() ;
@@ -85,7 +81,7 @@ class Base {
         return res
     }
     duplicateCheck(words) {
-        this.removeWords = ['機械学習', 'AI', 'DBエンジニア', 'セールス', 'コンサル', '社内SE', 'マネージャ', 'リーダ', 'CTO', 'インフラエンジニア', 'EC']
+        this.removeWords = ['RPA','Oracle','社内情報システム','医療','Unity','機械学習', 'AI', 'DBエンジニア', 'セールス', 'コンサル', '社内SE', 'マネージャ', 'リーダ', 'CTO', 'インフラエンジニア', 'EC']
         let app = Application.currentApplication(); // 現在実行しているアプリケーションを取得
         app.includeStandardAdditions = true
         try {
@@ -330,7 +326,7 @@ class Green extends Base {
         let reg = /["'']/g;
         let res = {}
         let classData = [
-            { name: '所管', cl: '', },
+            { name: '所管', cl: '', val:''},
             { name: 'ポイント', cl: '', },
             { name: '募集背景', cl: '', },
             { name: '仕事内容', cl: '.com_content__basic-info', },
@@ -340,7 +336,7 @@ class Green extends Base {
             { name: '勤務時間', cl: '', },
             { name: '勤務地', cl: '', },
             { name: '休日/休暇', cl: '', },
-            { name: '福利厚生', cl: '', },
+            { name: '待遇・福利厚生', cl: '', },
             { name: '事業内容', cl: '', },
             { name: '設立年月', cl: '', },
             { name: '従業員数', cl: '', },
