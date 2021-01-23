@@ -42,17 +42,17 @@ class Base {
                 break;
             }
         }
-        
+
         if (this.windowChrome === undefined) throw new Error('ウィンドウが見つからない')
         // this.test()
     }
     test() {
-        this.mainTabId=this.windowChrome.tabs[0].id() ;
-        
+        this.mainTabId = this.windowChrome.tabs[0].id();
+
         for (let i = 0; i < this.windowChrome.tabs.length; i++) {
             this.tabIds.push(this.windowChrome.tabs[i].id())
         }
-        this.tabIds.forEach(i=>console.log(i))
+        this.tabIds.forEach(i => console.log(i))
         this.app.displayDialog('s')
     }
     funcToObj(func) {
@@ -81,7 +81,7 @@ class Base {
         return res
     }
     duplicateCheck(words) {
-        this.removeWords = ['RPA','Oracle','社内情報システム','医療','Unity','機械学習', 'AI', 'DBエンジニア', 'セールス', 'コンサル', '社内SE', 'マネージャ', 'リーダ', 'CTO', 'インフラエンジニア', 'EC']
+        this.removeWords = ['RPA', 'Oracle', '社内情報システム', '医療', 'Unity', '機械学習', 'AI', 'DBエンジニア', 'セールス', 'コンサル', '社内SE', 'マネージャ', 'リーダ', 'CTO', 'インフラエンジニア', 'EC', 'ネットワークエンジニア']
         let app = Application.currentApplication(); // 現在実行しているアプリケーションを取得
         app.includeStandardAdditions = true
         try {
@@ -326,7 +326,7 @@ class Green extends Base {
         let reg = /["'']/g;
         let res = {}
         let classData = [
-            { name: '所管', cl: '', val:''},
+            { name: '所管', cl: '', val: '' },
             { name: 'ポイント', cl: '', },
             { name: '募集背景', cl: '', },
             { name: '仕事内容', cl: '.com_content__basic-info', },
@@ -433,7 +433,7 @@ class Green extends Base {
     }
     condition(i) {
         let counter = this.exeJs(this.windowChrome.tabs[0], this.getCounter);
-        return i<=counter.number-1
+        return i <= counter.number - 1
     }
 }
 /************************************************************/
@@ -472,14 +472,18 @@ try {
     main.init()
     main.findWindow()
     let count = 0
-    let i=0
+    let j = 0
+    // Green用のカウンタ
+    let greenCount = 0;
     do {
-        // Greenのみ
-        if (siteNumber == 3) main.exeJs(main.windowChrome.tabs[0], main.moveToBottom)
 
         let companies = main.exeJs(main.windowChrome.tabs[0], main.getNumberOfCompany)
+        // console.log('i', i)
+        console.log('companies', companies)
+        for (let i=0; i < companies; i++,j++) {
 
-        for (; i < companies; i++) {
+            // Greenのみ
+            if (siteNumber == 3 && i%5==0) main.exeJs(main.windowChrome.tabs[0], main.moveToBottom)
 
             let counter = main.exeJs(main.windowChrome.tabs[0], main.getCounter);
             console.log(Number(counter.counter) + i + "/" + counter.number + '  ' + count + '個追加')
@@ -489,20 +493,19 @@ try {
             if (main.duplicateCheck(jobDesc.job)) continue
             // i番目の会社をクリック
             main.mainClick(i)
-            // main.exeJs(main.windowChrome.tabs[0], main.companyClick, i)
             // 詳細をクリック
             main.mainDetailClick()
-            // main.exeJs(main.windowChrome.activeTab, main.kyujinClick)
             // データ取得
             let data = main.mainGetData()
-            // let data = main.exeJs(main.windowChrome.activeTab, main.getData)
             // データを整形して書き込み
             main.write(data, jobDesc)
             // タブを閉じる
             main.windowChrome.activeTab.close()
             count++
         }
-    } while (main.condition(i))
+        // 「次へ」のボタンがあるなら押して次のループへ
+        // Greenの場合は次の会社情報がるなら
+    } while (main.condition(j))
 } catch (error) {
     console.log(error)
 }
